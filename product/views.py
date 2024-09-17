@@ -9,11 +9,10 @@ def index(request):
 
 
 class ProductListCreateView(generics.ListCreateAPIView):
+    """Представление для получения списка продуктов и создания нового продукта."""
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     def perform_create(self, serializer):
-        # Проверки перед созданием продукта
-        if serializer.validated_data['price'] <= 0:
-            raise serializers.ValidationError("Цена должна быть положительным числом.")
+        """Сохраняет новый продукт после валидации."""
         serializer.save()
