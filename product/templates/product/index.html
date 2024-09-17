@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product API</title>
+    <script>
+        async function fetchProducts() {
+            const response = await fetch('/api/products/');
+            const products = await response.json();
+            const tableBody = document.getElementById('product-table-body');
+            tableBody.innerHTML = ''; // Очистить текущее содержимое таблицы
+            products.forEach(product => {
+                // Создаем строку для таблицы с использованием шаблонных строк
+                const row = `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td>${product.description}</td>
+                        <td>${product.price}</td>
+                    </tr>`;
+                tableBody.innerHTML += row; // Добавляем строку в таблицу
+            });
+        }
+
+        async function addProduct(event) {
+            event.preventDefault(); // Предотвращаем перезагрузку страницы
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const response = await fetch('/api/products/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, description, price }),
+            });
+
+            if (response.ok) {
+                fetchProducts(); // Обновить список продуктов
+                document.getElementById('product-form').reset(); // Очистить форму
+            } else {
+                alert('Ошибка при добавлении продукта.');
+            }
+        }
+
+        window.onload = fetchProducts; // Загрузить продукты при загрузке страницы
+    </script>
+</head>
+<body>
+    <h1>Добавить продукт</h1>
+    <form id="product-form" onsubmit="addProduct(event)">
+        <input type="text" id="name" placeholder="Название" required>
+        <textarea id="description" placeholder="Описание" required></textarea>
+        <input type="number" id="price" placeholder="Цена" step="0.01" required>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <h2>Список продуктов</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+        <tbody id="product-table-body">
+            <!-- Продукты будут добавлены здесь -->
+        </tbody>
+    </table>
+</body>
+</html>
+
+
